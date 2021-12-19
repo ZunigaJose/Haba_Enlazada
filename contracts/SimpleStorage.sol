@@ -1,21 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.5.16;
+pragma experimental ABIEncoderV2;
 
 contract SimpleStorage {
-  //quien la esta subiendo
-  string ipfsHash;
-  uint256 date;
-  string nivel;
-  string jrv;
-
-  function set(string memory xhash, string memory nvl, string memory xjrv) public {
-    ipfsHash = xhash;
-    date = now;
-    nivel = nvl;
-    jrv =xjrv;
+  struct Acta {
+    bool exists;
+    string ipfsHash;
+    uint256 date;
+    //string jrv;
+    address sender;
   }
 
-  function get() public view returns (string memory) {
-    return ipfsHash;
+  mapping(string => mapping(string => Acta)) Actas;
+
+  function addActa(string memory _ipfsHash, string memory _nivel, string memory _jrv) public {
+    Actas[_jrv][_nivel] = Acta({exists: true, ipfsHash: _ipfsHash, date: block.timestamp, sender: msg.sender});
+  }
+
+  function get(string memory _jrv, string memory _nivel) public view returns (Acta memory) {
+    return Actas[_jrv][_nivel];
   }
 }
